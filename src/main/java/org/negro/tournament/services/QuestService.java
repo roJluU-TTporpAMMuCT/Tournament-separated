@@ -35,11 +35,13 @@ public class QuestService {
 	
 	@SuppressWarnings("deprecation")
 	public Result runQuest(String username, String code, Quest q) throws Exception {
-		compiler.compile(username + "." + q.getClassName(), "package " + username + "; " +  code);
-		Class<?> preTestRes = compiler.compile(q.getClassName() + "Test", "import " + username + ".*;" + q.getPreTestCode() );
-		Class<?> testRes = compiler.compile(q.getClassName() + "Test2", "import " + username + ".*;" + q.getTestCode() );
+		compiler.addSource(username + "." + q.getClassName(), "package " + username + "; " +  code);
+		compiler.addSource(q.getClassName() + "Test", "import " + username + ".*;" + q.getPreTestCode() );
+		compiler.addSource(q.getClassName() + "Test2", "import " + username + ".*;" + q.getTestCode() );
+		Map<String, Class<?>> compiled = compiler.compileAll();
 		final Result[] res = new Result[1];
-		Thread task = new Thread(() -> res[0] = JUnitCore.runClasses(preTestRes, testRes) );
+		Thread task = new Thread(() -> res[0] =
+				JUnitCore.runClasses(compiled.get(q.getClassName() + "Test"), compiled.get(q.getClassName() + "Test2")) );
 		task.start(); task.join(16000); task.stop();
 		if(res[0] == null)
 			throw new CompilationException("Run time is over 16 seconds");
