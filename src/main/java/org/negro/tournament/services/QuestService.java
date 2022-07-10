@@ -35,9 +35,9 @@ public class QuestService {
 	
 	@SuppressWarnings("deprecation")
 	public Result runQuest(String username, String code, Quest q) throws Exception {
-		compiler.addSource(username + "." + q.getClassName(), "package " + username + "; " +  code);
-		compiler.addSource(q.getClassName() + "Test", "import " + username + ".*;" + q.getPreTestCode() );
-		compiler.addSource(q.getClassName() + "Test2", "import " + username + ".*;" + q.getTestCode() );
+		compiler.addSource(username + "1." + q.getClassName(), "package " + username + "1; " +  code);
+		compiler.addSource(q.getClassName() + "Test", "import " + username + "1.*;" + q.getPreTestCode() );
+		compiler.addSource(q.getClassName() + "Test2", "import " + username + "1.*;" + q.getTestCode() );
 		Map<String, Class<?>> compiled = compiler.compileAll();
 		final Result[] res = new Result[1];
 		Thread task = new Thread(() -> res[0] =
